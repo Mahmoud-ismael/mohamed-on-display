@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -61,11 +62,20 @@ const accentMap: Record<Venture["accent"], { bar: string; chip: string; text: st
 };
 
 const contacts = [
-  { label: "Email", href: "mailto:ismail@hisako.eu", value: "ismail@hisako.eu" },
+  { label: "Email", href: "mailto:ismail@hisako.eu", value: "ismail@hisako.eu", copy: "ismail@hisako.eu" },
   { label: "LinkedIn", href: "https://www.linkedin.com/in/mohamedhisako", value: "in/mohamedhisako" },
   { label: "WhatsApp", href: "https://wa.me/254746110785", value: "+254 746 110 785" },
-  { label: "Website", href: "https://ismail.hisako.eu", value: "ismail.hisako.eu" },
+  { label: "Website", href: "https://ismail.hisako.eu", value: "ismail.hisako.eu", copy: "ismail.hisako.eu" },
 ];
+
+async function copyText(text: string, label: string) {
+  try {
+    await navigator.clipboard.writeText(text);
+    toast.success(`${label} copied`, { description: text });
+  } catch {
+    toast.error("Couldn't copy to clipboard");
+  }
+}
 
 function Index() {
   return (
