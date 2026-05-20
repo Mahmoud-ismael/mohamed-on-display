@@ -52,6 +52,7 @@ const ventures: Venture[] = [
     type: "Creative Production",
     desc: "A full-service creative production studio based in Nairobi — brand, photography, and content.",
     accent: "silver",
+    href: "https://hisako.eu",
   },
 ];
 
@@ -63,7 +64,7 @@ const accentMap: Record<Venture["accent"], { bar: string; chip: string; text: st
 
 const contacts = [
   { label: "Email", href: "mailto:ismail@hisako.eu", value: "ismail@hisako.eu", copy: "ismail@hisako.eu" },
-  { label: "LinkedIn", href: "https://www.linkedin.com/in/mohamedhisako", value: "in/mohamedhisako" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/mohamedhisako", value: "mohamedhisako" },
   { label: "WhatsApp", href: "https://wa.me/254746110785", value: "+254 746 110 785" },
   { label: "Website", href: "https://ismail.hisako.eu", value: "ismail.hisako.eu", copy: "ismail.hisako.eu" },
 ];
@@ -75,6 +76,33 @@ async function copyText(text: string, label: string) {
   } catch {
     toast.error("Couldn't copy to clipboard");
   }
+}
+
+function downloadVCard() {
+  const vcard = [
+    "BEGIN:VCARD",
+    "VERSION:3.0",
+    "N:Ismail;Mohamed;;;",
+    "FN:Mohamed Ismail",
+    "ORG:Hisako Technologies",
+    "TITLE:Founder & Builder",
+    "EMAIL;TYPE=INTERNET,PREF:ismail@hisako.eu",
+    "TEL;TYPE=CELL:+254746110785",
+    "URL:https://ismail.hisako.eu",
+    "URL;TYPE=LinkedIn:https://www.linkedin.com/in/mohamedhisako",
+    "ADR;TYPE=WORK:;;;Nairobi;;;Kenya",
+    "END:VCARD",
+  ].join("\r\n");
+  const blob = new Blob([vcard], { type: "text/vcard;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "Mohamed-Ismail.vcf";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast.success("Contact saved", { description: "Mohamed-Ismail.vcf downloaded" });
 }
 
 function Index() {
