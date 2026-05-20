@@ -166,7 +166,19 @@ function Index() {
         {/* Contact */}
         <section className="rise flex flex-col gap-3" style={{ animationDelay: "360ms" }}>
           <h2 className="font-display text-2xl tracking-widest text-muted-foreground">CONNECT</h2>
+          <button
+            type="button"
+            onClick={downloadVCard}
+            className="group flex items-center justify-between rounded-xl bg-amber text-background px-4 py-3.5 transition-all duration-200 hover:brightness-110 active:scale-[0.98]"
+          >
+            <span className="flex flex-col text-left">
+              <span className="text-[10px] uppercase tracking-[0.18em] opacity-70">vCard · .vcf</span>
+              <span className="font-display text-xl tracking-wider">Save my contact</span>
+            </span>
+            <span className="text-2xl transition-transform duration-300 group-hover:translate-y-0.5">↓</span>
+          </button>
           <div className="grid grid-cols-2 gap-2.5">
+
             {contacts.map((c) => {
               const baseClass = "group flex flex-col rounded-xl bg-card border border-border px-3.5 py-3 transition-all duration-200 hover:bg-amber hover:border-amber hover:text-background active:scale-[0.97] text-left";
               const inner = (
