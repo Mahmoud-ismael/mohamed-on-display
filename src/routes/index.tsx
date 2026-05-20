@@ -52,6 +52,7 @@ const ventures: Venture[] = [
     type: "Creative Production",
     desc: "A full-service creative production studio based in Nairobi — brand, photography, and content.",
     accent: "silver",
+    href: "https://hisako.eu",
   },
 ];
 
@@ -63,7 +64,7 @@ const accentMap: Record<Venture["accent"], { bar: string; chip: string; text: st
 
 const contacts = [
   { label: "Email", href: "mailto:ismail@hisako.eu", value: "ismail@hisako.eu", copy: "ismail@hisako.eu" },
-  { label: "LinkedIn", href: "https://www.linkedin.com/in/mohamedhisako", value: "in/mohamedhisako" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/mohamedhisako", value: "mohamedhisako" },
   { label: "WhatsApp", href: "https://wa.me/254746110785", value: "+254 746 110 785" },
   { label: "Website", href: "https://ismail.hisako.eu", value: "ismail.hisako.eu", copy: "ismail.hisako.eu" },
 ];
@@ -75,6 +76,33 @@ async function copyText(text: string, label: string) {
   } catch {
     toast.error("Couldn't copy to clipboard");
   }
+}
+
+function downloadVCard() {
+  const vcard = [
+    "BEGIN:VCARD",
+    "VERSION:3.0",
+    "N:Ismail;Mohamed;;;",
+    "FN:Mohamed Ismail",
+    "ORG:Hisako Technologies",
+    "TITLE:Founder & Builder",
+    "EMAIL;TYPE=INTERNET,PREF:ismail@hisako.eu",
+    "TEL;TYPE=CELL:+254746110785",
+    "URL:https://ismail.hisako.eu",
+    "URL;TYPE=LinkedIn:https://www.linkedin.com/in/mohamedhisako",
+    "ADR;TYPE=WORK:;;;Nairobi;;;Kenya",
+    "END:VCARD",
+  ].join("\r\n");
+  const blob = new Blob([vcard], { type: "text/vcard;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "Mohamed-Ismail.vcf";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast.success("Contact saved", { description: "Mohamed-Ismail.vcf downloaded" });
 }
 
 function Index() {
@@ -138,7 +166,19 @@ function Index() {
         {/* Contact */}
         <section className="rise flex flex-col gap-3" style={{ animationDelay: "360ms" }}>
           <h2 className="font-display text-2xl tracking-widest text-muted-foreground">CONNECT</h2>
+          <button
+            type="button"
+            onClick={downloadVCard}
+            className="group flex items-center justify-between rounded-xl bg-amber text-background px-4 py-3.5 transition-all duration-200 hover:brightness-110 active:scale-[0.98]"
+          >
+            <span className="flex flex-col text-left">
+              <span className="text-[10px] uppercase tracking-[0.18em] opacity-70">vCard · .vcf</span>
+              <span className="font-display text-xl tracking-wider">Save my contact</span>
+            </span>
+            <span className="text-2xl transition-transform duration-300 group-hover:translate-y-0.5">↓</span>
+          </button>
           <div className="grid grid-cols-2 gap-2.5">
+
             {contacts.map((c) => {
               const baseClass = "group flex flex-col rounded-xl bg-card border border-border px-3.5 py-3 transition-all duration-200 hover:bg-amber hover:border-amber hover:text-background active:scale-[0.97] text-left";
               const inner = (
