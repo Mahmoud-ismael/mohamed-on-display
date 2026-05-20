@@ -139,20 +139,44 @@ function Index() {
         <section className="rise flex flex-col gap-3" style={{ animationDelay: "360ms" }}>
           <h2 className="font-display text-2xl tracking-widest text-muted-foreground">CONNECT</h2>
           <div className="grid grid-cols-2 gap-2.5">
-            {contacts.map((c) => (
-              <a
-                key={c.label}
-                href={c.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex flex-col rounded-xl bg-card border border-border px-3.5 py-3 transition-all duration-200 hover:bg-amber hover:border-amber hover:text-background active:scale-[0.97]"
-              >
-                <span className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground group-hover:text-background/70">{c.label}</span>
-                <span className="text-sm font-medium mt-0.5 truncate">{c.value}</span>
-              </a>
-            ))}
+            {contacts.map((c) => {
+              const baseClass = "group flex flex-col rounded-xl bg-card border border-border px-3.5 py-3 transition-all duration-200 hover:bg-amber hover:border-amber hover:text-background active:scale-[0.97] text-left";
+              const inner = (
+                <>
+                  <span className="flex items-center justify-between text-[10px] uppercase tracking-[0.18em] text-muted-foreground group-hover:text-background/70">
+                    {c.label}
+                    {c.copy && <span className="normal-case tracking-normal text-[10px] opacity-60 group-hover:opacity-100">copy</span>}
+                  </span>
+                  <span className="text-sm font-medium mt-0.5 truncate">{c.value}</span>
+                </>
+              );
+              if (c.copy) {
+                return (
+                  <button
+                    key={c.label}
+                    type="button"
+                    onClick={() => copyText(c.copy!, c.label)}
+                    className={baseClass}
+                  >
+                    {inner}
+                  </button>
+                );
+              }
+              return (
+                <a
+                  key={c.label}
+                  href={c.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={baseClass}
+                >
+                  {inner}
+                </a>
+              );
+            })}
           </div>
         </section>
+
 
         {/* Footer */}
         <footer className="rise mt-auto pt-6 text-center text-xs text-muted-foreground" style={{ animationDelay: "480ms" }}>
