@@ -12,4 +12,10 @@ export default defineConfig({
   tanstackStart: {
     server: { entry: "server" },
   },
+  vite: {
+    server: {
+      // Dev-only: lets the preview serve the founders' custom hostnames.
+      allowedHosts: ["ismail.hisako.eu", "harith.hisako.eu"],
+    },
+  },
 });
