@@ -1,73 +1,47 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
+import { getProfileKey } from "@/lib/profile.functions";
+import {
+  profiles,
+  ventures,
+  workUrl,
+  type Profile,
+  type ProfileKey,
+  type Venture,
+} from "@/lib/profiles";
 
 export const Route = createFileRoute("/")({
+  loader: async () => ({ profileKey: await getProfileKey() }),
   component: Index,
-  head: () => ({
-    meta: [
-      { title: "Hisako — Founder & Builder" },
-      { name: "description", content: "Mohamed Ismail — 21-year-old founder building software and systems from Nairobi under Hisako Technologies." },
-      { property: "og:title", content: "Hisako — Founder & Builder" },
-      { property: "og:description", content: "Mohamed Ismail — founder building software and systems from Nairobi." },
-      { property: "og:type", content: "website" },
-      { property: "og:url", content: "/" },
-    ],
-    links: [
-      { rel: "canonical", href: "/" },
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap",
-      },
-    ],
-  }),
+  head: ({ match }) => {
+    const p = profiles[(match.loaderData?.profileKey ?? "maxamad") as ProfileKey];
+    return {
+      meta: [
+        { title: p.metaTitle },
+        { name: "description", content: p.metaDescription },
+        { property: "og:title", content: p.metaTitle },
+        { property: "og:description", content: p.metaDescription },
+        { property: "og:type", content: "website" },
+        { property: "og:url", content: p.websiteUrl },
+      ],
+      links: [
+        { rel: "canonical", href: p.websiteUrl },
+        { rel: "preconnect", href: "https://fonts.googleapis.com" },
+        { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+        {
+          rel: "stylesheet",
+          href: "https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap",
+        },
+      ],
+    };
+  },
 });
-
-type Venture = {
-  name: string;
-  type: string;
-  desc: string;
-  accent: "amber" | "teal" | "silver";
-  href?: string;
-};
-
-const ventures: Venture[] = [
-  {
-    name: "VendoFlow",
-    type: "B2B SaaS",
-    desc: "POS and inventory management built for Kenyan fashion boutiques.",
-    accent: "amber",
-    href: "https://vendoflow.com",
-  },
-  {
-    name: "Passr",
-    type: "Compliance SaaS",
-    desc: "Digital Product Passport platform helping outdoor and activewear brands meet EU regulations.",
-    accent: "teal",
-    href: "https://passr.eu",
-  },
-  {
-    name: "Hisako Studio",
-    type: "Creative Production",
-    desc: "A full-service creative production studio based in Nairobi — brand, photography, and content.",
-    accent: "silver",
-    href: "https://hisako.eu",
-  },
-];
 
 const accentMap: Record<Venture["accent"], { bar: string; chip: string; text: string }> = {
   amber: { bar: "bg-amber", chip: "bg-amber/15 text-amber", text: "text-amber" },
   teal: { bar: "bg-teal", chip: "bg-teal/15 text-teal", text: "text-teal" },
   silver: { bar: "bg-silver", chip: "bg-silver/15 text-silver", text: "text-silver" },
 };
-
-const contacts = [
-  { label: "Email", href: "mailto:ismail@hisako.eu", value: "ismail@hisako.eu", copy: "ismail@hisako.eu" },
-  { label: "LinkedIn", href: "https://www.linkedin.com/in/mohamedhisako", value: "mohamedhisako" },
-  { label: "WhatsApp", href: "https://wa.me/254746110785", value: "+254 746 110 785" },
-  { label: "Website", href: "https://ismail.hisako.eu", value: "ismail.hisako.eu", copy: "ismail.hisako.eu" },
-];
 
 async function copyText(text: string, label: string) {
   try {
@@ -78,18 +52,18 @@ async function copyText(text: string, label: string) {
   }
 }
 
-function downloadVCard() {
+function downloadVCard(p: Profile) {
   const vcard = [
     "BEGIN:VCARD",
     "VERSION:3.0",
-    "N:Ismail;Mohamed;;;",
-    "FN:Mohamed Ismail",
+    `N:${p.last};${p.first};;;`,
+    `FN:${p.fullName}`,
     "ORG:Hisako Technologies",
-    "TITLE:Founder & Builder",
-    "EMAIL;TYPE=INTERNET,PREF:ismail@hisako.eu",
-    "TEL;TYPE=CELL:+254746110785",
-    "URL:https://ismail.hisako.eu",
-    "URL;TYPE=LinkedIn:https://www.linkedin.com/in/mohamedhisako",
+    `TITLE:${p.role}`,
+    `EMAIL;TYPE=INTERNET,PREF:${p.email}`,
+    `TEL;TYPE=CELL:+${p.whatsappNumber}`,
+    `URL:${p.websiteUrl}`,
+    `URL;TYPE=LinkedIn:${p.linkedinUrl}`,
     "ADR;TYPE=WORK:;;;Nairobi;;;Kenya",
     "END:VCARD",
   ].join("\r\n");
@@ -97,15 +71,25 @@ function downloadVCard() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = "Mohamed-Ismail.vcf";
+  a.download = p.vcfFileName;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
-  toast.success("Contact saved", { description: "Mohamed-Ismail.vcf downloaded" });
+  toast.success("Contact saved", { description: `${p.vcfFileName} downloaded` });
 }
 
 function Index() {
+  const { profileKey } = Route.useLoaderData();
+  const me = profiles[profileKey as ProfileKey];
+
+  const contacts = [
+    { label: "Email", href: `mailto:${me.email}`, value: me.email, copy: me.email },
+    { label: "LinkedIn", href: me.linkedinUrl, value: me.linkedinLabel },
+    { label: "WhatsApp", href: `https://wa.me/${me.whatsappNumber}`, value: me.whatsappDisplay },
+    { label: "Website", href: me.websiteUrl, value: me.websiteDomain, copy: me.websiteDomain },
+  ];
+
   return (
     <main className="min-h-screen w-full flex justify-center bg-background">
       <article className="w-full max-w-[430px] px-6 pt-10 pb-8 flex flex-col gap-8">
@@ -116,18 +100,18 @@ function Index() {
             Available · Nairobi, KE
           </div>
           <h1 className="font-display text-[68px] leading-[0.92] mt-4 tracking-wide">
-            Mohamed<br />
-            <span className="text-amber">Ismail.</span>
+            {me.first}<br />
+            <span className="text-amber">{me.last}.</span>
           </h1>
           <p className="mt-3 text-base text-foreground/90">
-            Founder & Builder <span className="text-muted-foreground">— Hisako Technologies</span>
+            {me.role} <span className="text-muted-foreground">— Hisako Technologies</span>
           </p>
         </header>
 
         {/* Bio */}
         <section className="rise" style={{ animationDelay: "120ms" }}>
           <p className="text-[15px] leading-relaxed text-foreground/85">
-            21-year-old founder building software and systems from Nairobi. I create tools that solve real problems — for African businesses and global markets. Currently shipping multiple products under Hisako Technologies.
+            {me.bio}
           </p>
         </section>
 
@@ -160,6 +144,20 @@ function Index() {
                 </Tag>
               );
             })}
+
+            {/* More of our work */}
+            <a
+              href={workUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center justify-between rounded-xl border border-dashed border-border px-4 py-3.5 transition-all duration-300 hover:border-amber hover:-translate-y-0.5"
+            >
+              <span className="flex flex-col text-left">
+                <span className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground group-hover:text-amber/70">hisako.eu/work</span>
+                <span className="font-display text-xl tracking-wider group-hover:text-amber">More of our work</span>
+              </span>
+              <span className="text-xl text-muted-foreground transition-all duration-300 group-hover:text-amber group-hover:translate-x-1 group-hover:-translate-y-1">↗</span>
+            </a>
           </div>
         </section>
 
@@ -168,7 +166,7 @@ function Index() {
           <h2 className="font-display text-2xl tracking-widest text-muted-foreground">CONNECT</h2>
           <button
             type="button"
-            onClick={downloadVCard}
+            onClick={() => downloadVCard(me)}
             className="group flex items-center justify-between rounded-xl bg-amber text-background px-4 py-3.5 transition-all duration-200 hover:brightness-110 active:scale-[0.98]"
           >
             <span className="flex flex-col text-left">
