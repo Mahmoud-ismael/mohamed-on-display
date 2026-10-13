@@ -44,7 +44,7 @@ export const profiles: Record<ProfileKey, Profile> = {
     first: "Harith",
     last: "Isman",
     fullName: "Harith Isman",
-    role: "Management",
+    role: "Founder & CEO",
     bio: "21-year-old co-founder managing operations and partnerships at Hisako Technologies from Nairobi — keeping our products, studio, and people moving in the same direction.",
     email: "harith@hisako.eu",
     linkedinUrl: "https://www.linkedin.com/in/harith-isman-32789b40b/",
