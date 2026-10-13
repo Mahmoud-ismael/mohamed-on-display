@@ -7,6 +7,7 @@ import {
   workUrl,
   type Profile,
   type ProfileKey,
+  type Venture,
 } from "@/lib/profiles";
 
 export const Route = createFileRoute("/")({
