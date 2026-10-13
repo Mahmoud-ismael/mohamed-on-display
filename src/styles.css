@@ -16,6 +16,7 @@
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
+  --color-qr-paper: var(--qr-paper);
   --font-display: "Bebas Neue", "Clash Display", sans-serif;
   --font-sans: "DM Sans", system-ui, sans-serif;
 }
@@ -32,6 +33,8 @@
   --muted: oklch(0.22 0 0);
   --muted-foreground: oklch(0.7 0 0);
   --border: oklch(0.25 0 0);
+  --qr-paper: #ffffff;
+  --qr-ink: #0d0d0d;
 }
 
 @layer base {
@@ -56,4 +59,8 @@
 .rise {
   opacity: 0;
   animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise { opacity: 1; animation: none; }
 }

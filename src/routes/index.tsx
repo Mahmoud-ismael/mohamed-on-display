@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
+import { ProfileQrCodes } from "@/components/profile-qr";
 import { getProfileKey } from "@/lib/profile.functions";
 import {
   profiles,
@@ -22,6 +23,7 @@ export const Route = createFileRoute("/")({
         { property: "og:title", content: p.metaTitle },
         { property: "og:description", content: p.metaDescription },
         { property: "og:type", content: "website" },
+        { name: "twitter:card", content: "summary" },
         { property: "og:url", content: p.websiteUrl },
       ],
       links: [
@@ -193,7 +195,7 @@ function Index() {
                   <button
                     key={c.label}
                     type="button"
-                    onClick={() => copyText(c.copy!, c.label)}
+                    onClick={() => { if (c.copy) void copyText(c.copy, c.label); }}
                     className={baseClass}
                   >
                     {inner}
@@ -215,6 +217,8 @@ function Index() {
           </div>
         </section>
 
+
+        <ProfileQrCodes currentProfile={me} />
 
         {/* Footer */}
         <footer className="rise mt-auto pt-6 text-center text-xs text-muted-foreground" style={{ animationDelay: "480ms" }}>
